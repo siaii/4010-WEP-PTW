@@ -76,7 +76,7 @@ def main():
         for k in range(len(networktable)):
             print("bssid = " + str(networktable[k].bssid) + " keyindex=" + str(networktable[k].keyid) + " packets="+str(networktable[k].state.packets_collected))
             print("checking for 40-bit key")
-            if KeyCompute.computekey(networktable[k].state, key, 5, const.KEYLIMIT/10) == 1:
+            if KeyCompute.computekey(networktable[k].state, key, 5, const.KEYLIMIT / 10) == 1:
                 printkey(key, 5)
                 return
             print("checking for 104-bit key")
