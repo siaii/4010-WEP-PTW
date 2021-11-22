@@ -7,5 +7,9 @@ IVBYTES = 3
 KSBYTES = 16
 TESTBYTES = 6
 MAINKEYBYTES = 13
+
+# number of keys to test
 KEYLIMIT = 1000000
+
+# (2^24)/8, max number of IVs in bytes
 IVTABLELEN = 2097152

@@ -1,6 +1,3 @@
-import numpy as np
-import sys
-import Constants as const
 import copy
 from HelperClass import *
 
@@ -50,6 +47,7 @@ def rc4init(key: list, keylen: int):
     return state
 
 
+# do one round of rc4 update
 def rc4update(state: rc4state):
     state.i += 1
     state.i %= const.LEN_S
@@ -61,12 +59,11 @@ def rc4update(state: rc4state):
     return state.s[k]
 
 
+# equation 5 in ptw paper
 def guesskeybytes(iv: list, keystream: list, kb: int):
     state = copy.deepcopy(initial_rc4)
     j = 0
-    tmp = 0
     jj = const.IVBYTES
-    ii = 0
     s = 0
     result = [0] * const.MAINKEYBYTES
 
@@ -90,14 +87,8 @@ def guesskeybytes(iv: list, keystream: list, kb: int):
     return result
 
 
+# test if the key is correct
 def correct(state: attackstate, key: list, keylen: int):
-
-    # for i in range(state.sessions_collected):
-    #     print(state.sessions[i].iv)
-
-    # if(key[:5] == [31,31,31,31,31]):
-    #     print(key)
-
     for i in range(state.sessions_collected):
         keybuf = []
         for j in range(const.IVBYTES):
@@ -105,8 +96,6 @@ def correct(state: attackstate, key: list, keylen: int):
         for j in range(keylen):
             keybuf.append(copy.deepcopy(key[j]))
         rcstate = rc4init(keybuf, keylen+const.IVBYTES)
-        # print(rcstate)
-        # print(state.sessions[i+1].iv)
         for j in range(const.TESTBYTES):
             if (rc4update(rcstate) ^ state.sessions[i].keystream[j]) != 0:
                 return 0
@@ -114,13 +103,9 @@ def correct(state: attackstate, key: list, keylen: int):
     return 1
 
 
+# calculate value to determine possible strong bytes
 def getdrv(orgtable, keylen):
     numvotes = 0
-    # help = 0.0
-    # maxhelp = 0.0
-    # maxi = 0.0
-    # emax = 0.0
-    # e2 = 0.0
     normal = [None]*const.MAINKEYBYTES
     outlier = [None]*const.MAINKEYBYTES
     for i in range(const.LEN_S):
@@ -153,17 +138,16 @@ def getdrv(orgtable, keylen):
     return normal, outlier
 
 
-
-
-
 def doround(sortedtable, keybyte, fixat, fixvalue, searchborders, key, keylen, state, sum, strongbytes) -> int:
     if keybyte == keylen:
         return correct(state, key, keylen)
     elif strongbytes[keybyte] == 1:
         tmp = 3 + keybyte
+
         for i in range(keybyte-1, 0, -1):
             tmp += 3 + key[i] + i
             key[keybyte] = (256 - tmp) % const.LEN_S
+
             if doround(sortedtable, keybyte+1, fixat, fixvalue, searchborders, key, keylen, state, (256-tmp+sum)%256, strongbytes) == 1:
                 return 1
         return 0
@@ -173,6 +157,7 @@ def doround(sortedtable, keybyte, fixat, fixvalue, searchborders, key, keylen, s
     else:
         for i in range(searchborders[keybyte]):
             key[keybyte] = (sortedtable[keybyte][i].b - sum) % const.LEN_S
+
             if doround(sortedtable, keybyte+1, fixat, fixvalue, searchborders, key, keylen, state, sortedtable[keybyte][i].b, strongbytes) == 1:
                 return 1
         return 0
@@ -190,7 +175,6 @@ def docomputation(state, key, keylen, table, sh2, strongbytes, keylimit) -> int:
     prod = 0
     fixat = -1
     fixvalue = 0
-
 
     while prod < keylimit:
         if doround(table, 0, fixat, fixvalue, choices, key, keylen, state, 0, strongbytes) == 1:
@@ -242,9 +226,11 @@ def computekey(state, keybuf, keylen, testlimit) -> int:
     sh = [item for sublist in sh1 for item in sublist]
     sh = sorted(sh, key=comparesorthelper, reverse=False)
 
+    # Try finding key assuming no strongbytes
     if docomputation(state, keybuf, keylen, table, sh, strongbytes, simple) == 1:
         return 1
 
+    # Try finding the strong bytes
     normal, outlier = getdrv(state.table, keylen)
     for i in range(keylen-1):
         helper[i].keybyte = i+1
@@ -262,6 +248,7 @@ def computekey(state, keybuf, keylen, testlimit) -> int:
     return 0
 
 
+# Add packet data to network table
 def addsession(state, iv, keystream):
     i = (iv[0] << 16) | (iv[1] << 8) | (iv[2])
     il = i//8
@@ -272,10 +259,6 @@ def addsession(state, iv, keystream):
         buf = guesskeybytes(iv, keystream, const.MAINKEYBYTES)
         for i in range(0, const.MAINKEYBYTES):
             state.table[i][buf[i]].votes += 1
-
-        # for i in range(const.MAINKEYBYTES):
-        #     for j in range(const.LEN_S):
-        #         print(str(i)+", "+str(j) + ", " + str(state.table[i][buf[i]].votes))
 
         if state.sessions_collected < 10:
             state.sessions[state.sessions_collected].iv = iv
