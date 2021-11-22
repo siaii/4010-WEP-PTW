@@ -8,7 +8,7 @@ Based on [aircrack-ptw<sup>1](#references)
 
 Written for CZ4010 Project
 
-##Background
+## Background
 ___
 WEP (Wired Equivalent Privacy) was a security algorithm for wireless networks. It was introduced in 1997 and uses the stream cipher [RC4](https://en.wikipedia.org/wiki/RC4 "RC4 Wikipedia")
 for encryption. The earliest attack to RC4, and by extension, WEP, was published in 2001 in the form of [FMS attack](https://en.wikipedia.org/wiki/Fluhrer,_Mantin_and_Shamir_attack).
@@ -53,10 +53,10 @@ Means a 40-bit key is found, in hexadecimal format:
 
 ## Acquiring ARP packets
 ___
-Detailed writeup to make sure you have supported hardware to capture packets is available [here.](https://www.aircrack-ng.org/doku.php?id=getting_started)
+A detailed writeup to make sure you have the proper hardware and drivers to capture packets is available [here.](https://www.aircrack-ng.org/doku.php?id=getting_started)
 
-Detailed method to capture the required WEP packets to use in this attack are available in 
-[here](https://www.aircrack-ng.org/doku.php?id=arp-request_reinjection) and [here.](https://www.javatpoint.com/arp-request-replay-attack)
+Detailed method to capture the required WEP packets to use in this attack are available 
+[here](https://www.aircrack-ng.org/doku.php?id=arp-request_reinjection) or [here.](https://www.javatpoint.com/arp-request-replay-attack)
 
 ## Limitations
 ___
