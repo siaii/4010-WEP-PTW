@@ -55,6 +55,8 @@ A detailed writeup to make sure you have the proper hardware and drivers to capt
 Detailed method to capture the required WEP packets to use in this attack are available 
 [here](https://www.aircrack-ng.org/doku.php?id=arp-request_reinjection) or [here.](https://www.javatpoint.com/arp-request-replay-attack)
 
+A working sample of WEP capture file used in the example above is available [here.](https://download.aircrack-ng.org/ptw.cap)
+
 ## Limitations
 - Only supports ARP packets.
 - Only supports WEP with shared key setup
