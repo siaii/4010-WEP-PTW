@@ -38,11 +38,15 @@ python ptw.py <your capture file>
 
 ## Output
 Example output:
->Found key with 40-bit length\
->['0x1f', '0x1f', '0x1f', '0x1f', '0x1f']
+```
+Found key with 40-bit length
+['0x1f', '0x1f', '0x1f', '0x1f', '0x1f']
+```
 
 Means a 40-bit key is found, in hexadecimal format:
->1F:1F:1F:1F:1F
+```
+1F:1F:1F:1F:1F
+```
 
 
 ## Acquiring ARP packets
