@@ -33,15 +33,18 @@ def main():
 
     cap_path = sys.argv[1]
 
+    print("Processing packets, could take a while")
     try:
         pcap = rdpcap(cap_path)
     except scapy.error.Scapy_Exception:
-        print("PCAP file could not be read")
+        print("Error. PCAP file could not be read")
+        return
+    except FileNotFoundError:
+        print("File not found. Please check your file again")
         return
 
     numstates = 0
     try:
-        print("processing packets, could take a while")
         for pkt in pcap:
             if isvalidpkt(pkt):
                 # Packet is ARP
@@ -52,7 +55,7 @@ def main():
 
                 if currenttable == -1:
                     # Allocate new table
-                    print("allocating a new table")
+                    print("Allocating a new table")
                     print("bssid = " + str(pkt[0].addr2) + " keyindex=" + str(pkt[1].keyid))
                     numstates += 1
                     networktable.append(network())
@@ -72,19 +75,19 @@ def main():
                 keystream = GetKeystream(pkt[1].wepdata, arp_known)
                 KeyCompute.addsession(networktable[currenttable].state, iv, keystream)
 
-        print("analyzing packets")
+        print("Analyzing packets")
         for k in range(len(networktable)):
             print("bssid = " + str(networktable[k].bssid) + " keyindex=" + str(networktable[k].keyid) + " packets="+str(networktable[k].state.packets_collected))
-            print("checking for 40-bit key")
+            print("Checking for 40-bit key")
             if KeyCompute.computekey(networktable[k].state, key, 5, const.KEYLIMIT / 10) == 1:
                 printkey(key, 5)
                 return
-            print("checking for 104-bit key")
+            print("Checking for 104-bit key")
             if KeyCompute.computekey(networktable[k].state, key, 13, const.KEYLIMIT) == 1:
                 printkey(key, 13)
                 return
 
-            print("key not found")
+            print("Key not found")
             return
 
     except Exception as e:
