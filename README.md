@@ -24,6 +24,10 @@ This project implements a more recently published attack, the [PTW attack<sup>2]
 - Python3
 - ~30000 or more ARP packets with unique IVs
 
+Python Libraries:
+- numpy
+- scapy
+
 ## Usage
 Make sure all required Python packages are installed using:
 
